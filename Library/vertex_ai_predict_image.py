@@ -21,7 +21,8 @@ from google.cloud.aiplatform.gapic.schema import predict
 def predict_image_object_detection_sample(
         project: str,
         endpoint_id: str,
-        filename: str,
+        # filename: str,
+        bytes_file,
         location: str = "us-central1",
         api_endpoint: str = "us-central1-aiplatform.googleapis.com",
         confidence_threshold: float = 0.5,
@@ -31,11 +32,9 @@ def predict_image_object_detection_sample(
     # Initialize client that will be used to create and send requests.
     # This client only needs to be created once, and can be reused for multiple requests.
     client = aiplatform.gapic.PredictionServiceClient(client_options=client_options)
-    with open(filename, "rb") as f:
-        file_input = f.read()
 
     # Call deployed model's prediction.
-    encoded_input = base64.b64encode(file_input).decode("utf-8")
+    encoded_input = base64.b64encode(bytes_file).decode("utf-8")
     instance = predict.instance.ImageObjectDetectionPredictionInstance(
         content=encoded_input,
     ).to_value()
