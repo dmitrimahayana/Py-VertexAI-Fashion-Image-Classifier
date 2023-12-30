@@ -75,7 +75,10 @@ if __name__ == "__main__":
     endpoint_id = "4782481955662856192"
     bucket_uri = 'gs://fashion_product_classifier'
 
+    # Update GCP credential using our json token
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = json_token
+
+    # Predict image
     input_image = "./Output/Image/Blazer/1 Textured jacket.png"
     result = predict_image_object_detection_sample(
         project=project_id,
@@ -84,4 +87,17 @@ if __name__ == "__main__":
         filename=input_image,
         confidence_threshold=0.08,
     )
-    print("Result Category: ", result['displayNames'])
+    print("Result Category:", result['displayNames'][0])
+    print("Result Bounding Box:", result['bboxes'][0])
+
+    # Predict image
+    input_image = "./Output/Image/Dress/17 Gaun berpayet.png"
+    result = predict_image_object_detection_sample(
+        project=project_id,
+        endpoint_id=endpoint_id,
+        location=location,
+        filename=input_image,
+        confidence_threshold=0.08,
+    )
+    print("Result Category:", result['displayNames'][0])
+    print("Result Bounding Box:", result['bboxes'][0])

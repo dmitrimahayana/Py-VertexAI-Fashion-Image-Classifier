@@ -53,12 +53,11 @@ def predict_image_object_detection_sample(
     )
 
     # Check Response
-    print(" deployed_model_id:", response.deployed_model_id)
+    print("\ndeployed_model_id:", response.deployed_model_id)
     # See gs://google-cloud-aiplatform/schema/predict/prediction/image_object_detection_1.0.0.yaml for the format of the predictions.
     predictions = response.predictions
     result = None
     for prediction in predictions:
-        print(" prediction:", dict(prediction))
         result = dict(prediction)
 
     return result
