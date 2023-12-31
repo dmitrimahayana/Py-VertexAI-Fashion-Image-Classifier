@@ -83,10 +83,6 @@ def iterate_url(df_input, page, output_file):
     df.to_csv(output_file, index=False)
 
 
-def insert_or_update_collection():
-    print("")
-
-
 if __name__ == "__main__":
     # Define variable
     headless = False
