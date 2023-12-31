@@ -13,6 +13,34 @@ def define_browser(headless):
     stealth_sync(page)
     return page, browser
 
+
+def iterate_url(df_input, page, output_file):
+    # Filter Status is yes
+    df_input = df_input[df_input["Status"] == "Yes"]
+
+    # Define dictionary
+    data_dict = {
+        "Gender": [],
+        "ItemType": [],
+        "ItemTitle": [],
+        "Price": [],
+        "ImageName": [],
+        "ImageURL": [],
+    }
+
+    # Navigate to url
+    for index, row in df_input.iterrows():
+        url_home = row["URL"]
+        page.goto(url_home, timeout=60_000)
+        time.sleep(5)
+
+        data_dict = scrape_data(page, data_dict, row)
+
+    # Create dataframe
+    df = pd.DataFrame(data_dict)
+    df.to_csv(output_file, index=False)
+
+
 def scrape_data(page, data_dict, row):
     # Select all a tags within the specified structure
     li_elements = page.query_selector_all("li > div.product-item-info")
@@ -45,6 +73,9 @@ def scrape_data(page, data_dict, row):
             price_split = price_img.split("Rp")
             price_img = "Rp " + price_split[1]
 
+        # Print values
+        print(f"{counter} {row['Gender']} {row['Type']} {title_img} {price_img} {image_url}")
+
         # Append to dictionary
         data_dict["Gender"].append(row['Gender'])
         data_dict["ItemType"].append(row['Type'])
@@ -52,40 +83,12 @@ def scrape_data(page, data_dict, row):
         data_dict["ImageURL"].append(image_url)
         data_dict["ItemTitle"].append(title_img)
         data_dict["Price"].append(price_img)
-        print(f"{counter} {row['Gender']} {row['Type']} {title_img} {price_img} {image_url}")
     return data_dict
-
-
-def iterate_url(df_input, page, output_file):
-    # Filter Status is yes
-    df_input = df_input[df_input["Status"] == "Yes"]
-
-    # Define dictionary
-    data_dict = {
-        "Gender": [],
-        "ItemType": [],
-        "ItemTitle": [],
-        "Price": [],
-        "ImageName": [],
-        "ImageURL": [],
-    }
-
-    # Navigate to url
-    for index, row in df_input.iterrows():
-        url_home = row["URL"]
-        page.goto(url_home, timeout=60_000)
-        time.sleep(5)
-
-        data_dict = scrape_data(page, data_dict, row)
-
-    # Create dataframe
-    df = pd.DataFrame(data_dict)
-    df.to_csv(output_file, index=False)
 
 
 if __name__ == "__main__":
     # Define variable
-    headless = False
+    headless = True
     input_file = "./Input/Input.xlsx"
     input_sheetname = "h&m"
     output_file = "./Output/h&m.csv"
