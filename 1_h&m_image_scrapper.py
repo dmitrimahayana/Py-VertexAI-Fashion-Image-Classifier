@@ -2,7 +2,6 @@ import os
 import time
 import urllib.request
 import pandas as pd
-from google.cloud import storage
 from playwright.sync_api import sync_playwright, expect
 from playwright_stealth import stealth_sync
 
@@ -13,31 +12,6 @@ def define_browser(headless):
     page = browser.new_page()
     stealth_sync(page)
     return page, browser
-
-
-def upload_image_to_gcs(local_image_path, bucket_name, destination_blob_name, json_keyfile_path):
-    """Uploads an image file to a Google Cloud Storage bucket with a nested folder structure.
-
-    Args:
-        local_image_path (str): Path to the local image file.
-        bucket_name (str): Name of the GCS bucket to upload the image to.
-        destination_blob_name (str): Desired path and name for the image file in the GCS bucket (including folders).
-        json_keyfile_path (str): Path to your GCP service account JSON key file.
-    """
-    # Initialize the GCS client with your service account credentials
-    client = storage.Client.from_service_account_json(json_keyfile_path)
-
-    # Get the GCS bucket
-    bucket = client.bucket(bucket_name)
-
-    # Create a blob (object) in the bucket with the specified destination_blob_name
-    blob = bucket.blob(destination_blob_name)
-
-    # Upload the local image file to GCS
-    blob.upload_from_filename(local_image_path)
-
-    print(f"Image {local_image_path} uploaded to {bucket_name}/{destination_blob_name}")
-
 
 def scrape_data(page, data_dict, row):
     # Select all a tags within the specified structure
@@ -78,14 +52,6 @@ def scrape_data(page, data_dict, row):
         data_dict["ImageURL"].append(image_url)
         data_dict["ItemTitle"].append(title_img)
         data_dict["Price"].append(price_img)
-
-        # # Upload to GCP Bucket
-        # json_keyfile_path = "D:/00 Project/00 My Project/Cloud Account/key_gcp/ringed-land-398802-ab3b0e1bf768.json"
-        # bucket_name = "fashion_id"
-        # source_image = f"{folder_path}{image_name}.png"
-        # destination_image = f"h&m/{row['Type']}/{image_name}.png"
-        # upload_image_to_gcs(source_image, bucket_name, destination_image, json_keyfile_path)
-
         print(f"{counter} {row['Gender']} {row['Type']} {title_img} {price_img} {image_url}")
     return data_dict
 
